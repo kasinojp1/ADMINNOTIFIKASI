@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Webseat Notifikasi</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    button, input, textarea { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    #log { margin-top: 20px; background: #f1f1f1; padding: 10px; height: 200px; overflow-y: scroll; }
+  </style>
+</head>
+<body>
+  <h1>Webseat Notifikasi - Admin</h1>
+
+  <input type="password" id="adminPass" placeholder="Masukkan password admin" />
+  <textarea id="notifMessage" placeholder="Tulis pesan notifikasi..." rows="3"></textarea>
+  <button id="postBtn">Post Update</button>
+
+  <div id="log"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvqbWpS1s_l72Fh8CLxO2jWFnEbSSIGSk",
+      authDomain: "kasinojpwork.firebaseapp.com",
+      databaseURL: "https://kasinojpwork-default-rtdb.firebaseio.com",
+      projectId: "kasinojpwork",
+      storageBucket: "kasinojpwork.firebasestorage.app",
+      messagingSenderId: "291449017470",
+      appId: "1:291449017470:web:14d6815edcd61f3618b42f",
+      measurementId: "G-D648ETD7YD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const logDiv = document.getElementById('log');
+    const postBtn = document.getElementById('postBtn');
+    const notifMessage = document.getElementById('notifMessage');
+    const adminPass = document.getElementById('adminPass');
+
+    const ADMIN_PASSWORD = "admin123"; // ganti sesuai keinginan
+
+    function log(msg) {
+      console.log(msg);
+      logDiv.innerHTML += msg + '<br>';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    postBtn.addEventListener('click', async () => {
+      if (adminPass.value !== ADMIN_PASSWORD) {
+        log('Password admin salah!');
+        alert('Password admin salah!');
+        return;
+      }
+
+      const msg = notifMessage.value.trim();
+      if (!msg) { log('Tulis pesan dulu!'); return; }
+
+      // Simpan pesan ke Firebase Realtime Database
+      await push(ref(db, 'notifications'), { title: 'Update Admin', body: msg });
+      log('Pesan admin disimpan, akan dikirim ke semua subscriber.');
+      notifMessage.value = '';
+    });
+
+  </script>
+</body>
+</html>
