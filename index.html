@@ -1,55 +1,92 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin KasinoJP Notifikasi</title>
-<style>
-body{ font-family: Arial; background:#111; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; min-height:100vh;}
-h1{margin-bottom:20px;}
-input,textarea{width:300px;margin-bottom:10px;padding:8px;border-radius:5px;border:none;font-size:16px;}
-button{padding:10px 20px;font-size:16px;cursor:pointer;border-radius:5px;border:none;background:#ff6600;color:#fff;}
-#status{margin-top:15px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Notifikasi KasinoJP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 { margin-bottom: 20px; }
+    input, textarea {
+      width: 300px;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      background: #ff6600;
+      color: #fff;
+    }
+    #status { margin-top: 15px; font-size: 16px; }
+  </style>
 </head>
 <body>
-<h1>Admin Notifikasi KasinoJP</h1>
-<input type="text" id="title" placeholder="Judul Notifikasi">
-<textarea id="body" rows="4" placeholder="Isi Notifikasi"></textarea>
-<button id="sendBtn">Kirim Notifikasi</button>
-<div id="status"></div>
+  <h1>Admin Notifikasi KasinoJP</h1>
+  <input type="text" id="title" placeholder="Judul Notifikasi" />
+  <textarea id="body" rows="4" placeholder="Isi Notifikasi"></textarea>
+  <button id="sendBtn">Kirim Notifikasi</button>
+  <div id="status"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCvqbWpS1s_l72Fh8CLxO2jWFnEbSSIGSk",
-  authDomain: "kasinojpwork.firebaseapp.com",
-  databaseURL: "https://kasinojpwork-default-rtdb.firebaseio.com",
-  projectId: "kasinojpwork",
-  storageBucket: "kasinojpwork.firebasestorage.app",
-  messagingSenderId: "291449017470",
-  appId: "1:291449017470:web:14d6815edcd61f3618b42f",
-  measurementId: "G-D648ETD7YD"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvqbWpS1s_l72Fh8CLxO2jWFnEbSSIGSk",
+      authDomain: "kasinojpwork.firebaseapp.com",
+      databaseURL: "https://kasinojpwork-default-rtdb.firebaseio.com",
+      projectId: "kasinojpwork",
+      storageBucket: "kasinojpwork.firebasestorage.app",
+      messagingSenderId: "291449017470",
+      appId: "1:291449017470:web:14d6815edcd61f3618b42f",
+      measurementId: "G-D648ETD7YD"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-const sendBtn = document.getElementById('sendBtn');
-const statusEl = document.getElementById('status');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusEl = document.getElementById('status');
 
-sendBtn.addEventListener('click', () => {
-  const title = document.getElementById('title').value;
-  const body = document.getElementById('body').value;
-  if(!title || !body){ statusEl.textContent="Judul & isi harus diisi!"; return; }
+    sendBtn.addEventListener('click', () => {
+      const title = document.getElementById('title').value.trim();
+      const body = document.getElementById('body').value.trim();
+      if (!title || !body) {
+        statusEl.textContent = "Judul dan isi notifikasi harus diisi!";
+        return;
+      }
 
-  const newRef = push(ref(db,'notifications'));
-  set(newRef,{ title, body, timestamp: Date.now() })
-  .then(()=>{ statusEl.textContent="Notifikasi terkirim!"; document.getElementById('title').value=''; document.getElementById('body').value=''; })
-  .catch(err=>{ statusEl.textContent="Gagal kirim notifikasi."; console.error(err); });
-});
-</script>
+      const notifRef = push(ref(db, 'notifications'));
+      set(notifRef, {
+        title: title,
+        body: body,
+        timestamp: Date.now()
+      }).then(() => {
+        statusEl.textContent = "Notifikasi terkirim!";
+        document.getElementById('title').value = '';
+        document.getElementById('body').value = '';
+      }).catch((err) => {
+        console.error("Gagal kirim notifikasi:", err);
+        statusEl.textContent = "Gagal kirim notifikasi.";
+      });
+    });
+  </script>
 </body>
 </html>
